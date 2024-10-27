@@ -1,14 +1,28 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Container, TextField, Button, Typography, Box } from '@mui/material';
+import React, {useState} from 'react';
+import {useNavigate} from 'react-router-dom';
+import {Container, TextField, Button, Typography, Box} from '@mui/material';
+import {register} from "../api/authApi.ts";
+import {AxiosError} from "axios";
 
 const Register: React.FC = () => {
-    // TODO: actually register a new user
     const navigate = useNavigate();
-    const handleRegister = (e: React.FormEvent) => {
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
+    const [email, setEmail] = useState<string>("");
+    const [password, setPassword] = useState<string>("");
+
+    const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Assuming registration is successful, redirect to the login page
-        navigate('/login');
+        try {
+            if (email === "" || password === "") {
+                return;
+            }
+            await register(email, password);
+            setSuccessMessage("User registered successfully. Go to login page.")
+        } catch (error) {
+            console.error('Error during login:', error);
+            setErrorMessage((error as AxiosError).message);
+        }
     };
 
     return (
@@ -17,34 +31,50 @@ const Register: React.FC = () => {
                 <Typography variant="h4" component="h1" gutterBottom>
                     Register
                 </Typography>
-                <form onSubmit={handleRegister}>
-                    <TextField
-                        label="Email"
-                        variant="outlined"
-                        fullWidth
-                        margin="normal"
-                        required
-                    />
-                    <TextField
-                        label="Password"
-                        type="password"
-                        variant="outlined"
-                        fullWidth
-                        margin="normal"
-                        required
-                    />
-                    <TextField
-                        label="Confirm Password"
-                        type="password"
-                        variant="outlined"
-                        fullWidth
-                        margin="normal"
-                        required
-                    />
-                    <Button type="submit" variant="contained" color="primary" fullWidth>
-                        Register
-                    </Button>
-                </form>
+
+                {!successMessage && (
+                    <>
+
+                        <TextField
+                            label="Email"
+                            variant="outlined"
+                            fullWidth
+                            margin="normal"
+                            onChange={e => setEmail(e.target.value)}
+                        />
+                        <TextField
+                            label="Password"
+                            type="password"
+                            variant="outlined"
+                            fullWidth
+                            margin="normal"
+                            onChange={e => setPassword(e.target.value)}
+                        />
+                        <Button type="submit" variant="contained" color="primary" fullWidth onClick={handleRegister}
+                                disabled={email === "" || password === ""}>
+                            Register
+                        </Button>
+                    </>
+                )}
+
+                {errorMessage && (
+                    <Typography variant="body1" color="error" gutterBottom>
+                        {errorMessage}
+                    </Typography>
+                )}
+
+                {successMessage && (
+                    <>
+                        <Typography variant="body1" color="success" gutterBottom>
+                            {successMessage}
+                        </Typography>
+                        <Button type="button" variant="contained"
+                                color="primary" fullWidth
+                                onClick={() => navigate("/login")}>
+                            Login
+                        </Button>
+                    </>
+                )}
             </Box>
         </Container>
     );
