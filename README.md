@@ -7,7 +7,7 @@ requested 😁.
 
 ## Live Version
 
-A live version of this project can be found at the following URL: . It is hosted on AWS using Simplify.
+A live version of this project can be found at the following URL: https://main.d2o6g4cj06znjx.amplifyapp.com It is hosted on AWS using Simplify.
 
 **Credentials:**
 
